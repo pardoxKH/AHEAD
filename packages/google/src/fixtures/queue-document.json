@@ -404,12 +404,272 @@
       },
       {
         "startIndex": 177,
-        "endIndex": 181,
+        "endIndex": 199,
         "paragraph": {
           "elements": [
             {
               "startIndex": 177,
-              "endIndex": 181,
+              "endIndex": 199,
+              "textRun": {
+                "content": "Reply to the auditors\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1,
+                        "blue": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 199,
+        "endIndex": 203,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 199,
+              "endIndex": 200,
+              "person": {
+                "personId": "kix.p199",
+                "personProperties": {
+                  "name": "Layla Haddad",
+                  "email": "layla@example.com"
+                },
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 200,
+              "endIndex": 201,
+              "textRun": {
+                "content": " ",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 201,
+              "endIndex": 202,
+              "richLink": {
+                "richLinkId": "kix.r201",
+                "richLinkProperties": {
+                  "title": "Board pack FY26",
+                  "uri": "https://docs.google.com/presentation/d/1BoardPackFy26/edit",
+                  "mimeType": "application/vnd.google-apps.presentation"
+                },
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 202,
+              "endIndex": 203,
+              "textRun": {
+                "content": "\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 203,
+        "endIndex": 219,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 203,
+              "endIndex": 208,
+              "textRun": {
+                "content": "Call ",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 208,
+              "endIndex": 209,
+              "person": {
+                "personId": "kix.p208",
+                "personProperties": {
+                  "email": "khalid@example.com"
+                },
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 209,
+              "endIndex": 217,
+              "textRun": {
+                "content": " before ",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 217,
+              "endIndex": 218,
+              "dateElement": {
+                "dateId": "kix.d217",
+                "dateElementProperties": {
+                  "displayText": "Nov 27, 2026",
+                  "dateFormat": "DATE_FORMAT_MONTH_DAY_YEAR_ABBREVIATED",
+                  "timestamp": "2026-11-27T00:00:00Z"
+                },
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 218,
+              "endIndex": 219,
+              "textRun": {
+                "content": "\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          }
+        }
+      },
+      {
+        "startIndex": 219,
+        "endIndex": 223,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 219,
+              "endIndex": 223,
               "textRun": {
                 "content": "   \n",
                 "textStyle": {
@@ -432,13 +692,378 @@
         }
       },
       {
-        "startIndex": 181,
-        "endIndex": 187,
+        "startIndex": 223,
+        "endIndex": 232,
         "paragraph": {
           "elements": [
             {
-              "startIndex": 181,
-              "endIndex": 187,
+              "startIndex": 223,
+              "endIndex": 232,
+              "textRun": {
+                "content": "Projects\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "HEADING_2",
+            "direction": "LEFT_TO_RIGHT",
+            "headingId": "h.heading_2223"
+          }
+        }
+      },
+      {
+        "startIndex": 232,
+        "endIndex": 318,
+        "table": {
+          "rows": 3,
+          "columns": 2,
+          "tableRows": [
+            {
+              "startIndex": 233,
+              "endIndex": 254,
+              "tableCells": [
+                {
+                  "startIndex": 234,
+                  "endIndex": 243,
+                  "content": [
+                    {
+                      "startIndex": 235,
+                      "endIndex": 243,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 235,
+                            "endIndex": 243,
+                            "textRun": {
+                              "content": "Project\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                },
+                                "bold": true
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        }
+                      }
+                    }
+                  ],
+                  "tableCellStyle": {
+                    "rowSpan": 1,
+                    "columnSpan": 1,
+                    "contentAlignment": "TOP"
+                  }
+                },
+                {
+                  "startIndex": 243,
+                  "endIndex": 254,
+                  "content": [
+                    {
+                      "startIndex": 244,
+                      "endIndex": 254,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 244,
+                            "endIndex": 254,
+                            "textRun": {
+                              "content": "Next step\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                },
+                                "bold": true
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        }
+                      }
+                    }
+                  ],
+                  "tableCellStyle": {
+                    "rowSpan": 1,
+                    "columnSpan": 1,
+                    "contentAlignment": "TOP"
+                  }
+                }
+              ],
+              "tableRowStyle": {
+                "minRowHeight": {
+                  "unit": "PT"
+                }
+              }
+            },
+            {
+              "startIndex": 254,
+              "endIndex": 306,
+              "tableCells": [
+                {
+                  "startIndex": 255,
+                  "endIndex": 270,
+                  "content": [
+                    {
+                      "startIndex": 256,
+                      "endIndex": 270,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 256,
+                            "endIndex": 270,
+                            "textRun": {
+                              "content": "Riyadh office\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        }
+                      }
+                    }
+                  ],
+                  "tableCellStyle": {
+                    "rowSpan": 1,
+                    "columnSpan": 1,
+                    "contentAlignment": "TOP"
+                  }
+                },
+                {
+                  "startIndex": 270,
+                  "endIndex": 306,
+                  "content": [
+                    {
+                      "startIndex": 271,
+                      "endIndex": 286,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 271,
+                            "endIndex": 286,
+                            "textRun": {
+                              "content": "Sign the lease\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                },
+                                "backgroundColor": {
+                                  "color": {
+                                    "rgbColor": {
+                                      "red": 1,
+                                      "green": 1
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        },
+                        "bullet": {
+                          "listId": "kix.queue1",
+                          "textStyle": {
+                            "underline": false
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "startIndex": 286,
+                      "endIndex": 306,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 286,
+                            "endIndex": 306,
+                            "textRun": {
+                              "content": "Hire a fit-out firm\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        },
+                        "bullet": {
+                          "listId": "kix.queue1",
+                          "textStyle": {
+                            "underline": false
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "tableCellStyle": {
+                    "rowSpan": 1,
+                    "columnSpan": 1,
+                    "contentAlignment": "TOP"
+                  }
+                }
+              ],
+              "tableRowStyle": {
+                "minRowHeight": {
+                  "unit": "PT"
+                }
+              }
+            },
+            {
+              "startIndex": 306,
+              "endIndex": 317,
+              "tableCells": [
+                {
+                  "startIndex": 307,
+                  "endIndex": 315,
+                  "content": [
+                    {
+                      "startIndex": 308,
+                      "endIndex": 315,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 308,
+                            "endIndex": 315,
+                            "textRun": {
+                              "content": "Hiring\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        }
+                      }
+                    }
+                  ],
+                  "tableCellStyle": {
+                    "rowSpan": 1,
+                    "columnSpan": 1,
+                    "contentAlignment": "TOP"
+                  }
+                },
+                {
+                  "startIndex": 315,
+                  "endIndex": 317,
+                  "content": [
+                    {
+                      "startIndex": 316,
+                      "endIndex": 317,
+                      "paragraph": {
+                        "elements": [
+                          {
+                            "startIndex": 316,
+                            "endIndex": 317,
+                            "textRun": {
+                              "content": "\n",
+                              "textStyle": {
+                                "weightedFontFamily": {
+                                  "fontFamily": "Arial",
+                                  "weight": 400
+                                },
+                                "fontSize": {
+                                  "magnitude": 11,
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "paragraphStyle": {
+                          "namedStyleType": "NORMAL_TEXT",
+                          "direction": "LEFT_TO_RIGHT"
+                        }
+                      }
+                    }
+                  ],
+                  "tableCellStyle": {
+                    "rowSpan": 1,
+                    "columnSpan": 1,
+                    "contentAlignment": "TOP"
+                  }
+                }
+              ],
+              "tableRowStyle": {
+                "minRowHeight": {
+                  "unit": "PT"
+                }
+              }
+            }
+          ],
+          "tableStyle": {}
+        }
+      },
+      {
+        "startIndex": 318,
+        "endIndex": 324,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 318,
+              "endIndex": 324,
               "textRun": {
                 "content": "Later\n",
                 "textStyle": {
@@ -457,18 +1082,18 @@
           "paragraphStyle": {
             "namedStyleType": "HEADING_2",
             "direction": "LEFT_TO_RIGHT",
-            "headingId": "h.heading_2181"
+            "headingId": "h.heading_2318"
           }
         }
       },
       {
-        "startIndex": 187,
-        "endIndex": 202,
+        "startIndex": 324,
+        "endIndex": 339,
         "paragraph": {
           "elements": [
             {
-              "startIndex": 187,
-              "endIndex": 202,
+              "startIndex": 324,
+              "endIndex": 339,
               "textRun": {
                 "content": "Renew passport\n",
                 "textStyle": {
@@ -506,13 +1131,13 @@
         }
       },
       {
-        "startIndex": 202,
-        "endIndex": 221,
+        "startIndex": 339,
+        "endIndex": 358,
         "paragraph": {
           "elements": [
             {
-              "startIndex": 202,
-              "endIndex": 209,
+              "startIndex": 339,
+              "endIndex": 346,
               "textRun": {
                 "content": "Ideas: ",
                 "textStyle": {
@@ -528,8 +1153,8 @@
               }
             },
             {
-              "startIndex": 209,
-              "endIndex": 221,
+              "startIndex": 346,
+              "endIndex": 358,
               "textRun": {
                 "content": "hire an EA?\n",
                 "textStyle": {

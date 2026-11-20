@@ -89,7 +89,7 @@ function toGmailMessage(input: DraftInput): gmail_v1.Schema$Message {
 /** Builds an RFC 2822 message with a UTF-8 plain-text body. */
 export function buildRawMessage({ to, subject, body, inReplyTo }: DraftInput): string {
   const headers = [
-    `To: ${headerValue(to)}`,
+    `To: ${encodeAddressList(headerValue(to))}`,
     `Subject: ${encodeHeaderWord(headerValue(subject))}`,
     ...(inReplyTo ? [`In-Reply-To: ${headerValue(inReplyTo)}`, `References: ${headerValue(inReplyTo)}`] : []),
     "MIME-Version: 1.0",
@@ -105,14 +105,32 @@ function headerValue(value: string): string {
   return value.replace(/[\r\n]+/g, " ").trim();
 }
 
-/** RFC 2047 encoding for non-ASCII header text, split so each encoded word stays within 75 chars. */
+/** Encodes non-ASCII display names in `Name <addr>, ...`; addresses stay as they are. */
+export function encodeAddressList(value: string): string {
+  return value
+    .split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/) // commas outside quotes
+    .map((address) => {
+      const match = /^\s*(.*?)\s*(<[^>]*>)\s*$/.exec(address);
+      const [, displayName, angleAddress] = match ?? [];
+      if (!displayName || !angleAddress) return address.trim();
+      if (isAscii(displayName)) return `${displayName} ${angleAddress}`;
+      const name = displayName.replace(/^"(.*)"$/, "$1");
+      return `${encodeHeaderWord(name)}\r\n ${angleAddress}`;
+    })
+    .join(", ");
+}
+
+const isAscii = (text: string) => /^[\x20-\x7e]*$/.test(text);
+
+/** RFC 2047 encoding for non-ASCII header text, folded so every header line stays within 78 chars. */
 export function encodeHeaderWord(text: string): string {
-  if (/^[\x20-\x7e]*$/.test(text)) return text;
+  if (isAscii(text)) return text;
   const words: string[] = [];
   let chunk = "";
   for (const char of text) {
-    // 45 bytes of UTF-8 encode to 60 base64 chars, plus 12 for `=?UTF-8?B??=`.
-    if (Buffer.byteLength(chunk + char, "utf8") > 45) {
+    // 42 bytes of UTF-8 encode to 56 base64 chars; with `=?UTF-8?B??=` a word is 68 chars,
+    // so even `Subject: ` plus the first word fits in 78.
+    if (Buffer.byteLength(chunk + char, "utf8") > 42) {
       words.push(chunk);
       chunk = "";
     }

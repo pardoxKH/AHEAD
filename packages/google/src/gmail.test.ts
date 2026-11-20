@@ -1,6 +1,6 @@
 import type { gmail_v1 } from "googleapis";
 import { describe, expect, it, vi } from "vitest";
-import { GmailClient, encodeHeaderWord } from "./gmail.js";
+import { GmailClient, encodeAddressList, encodeHeaderWord } from "./gmail.js";
 
 function mockGmail() {
   const api = {
@@ -82,11 +82,19 @@ describe("GmailClient", () => {
     expect(head).not.toContain("In-Reply-To");
   });
 
-  it("splits long encoded subjects into short encoded words", () => {
+  it("folds long encoded subjects so header lines stay within 78 chars", () => {
     const subject = "ملاحظات ".repeat(20);
     const encoded = encodeHeaderWord(subject);
-    for (const line of encoded.split("\r\n")) expect(line.trim().length).toBeLessThanOrEqual(75);
+    for (const line of `Subject: ${encoded}`.split("\r\n")) expect(line.length).toBeLessThanOrEqual(78);
     expect(decodeWords(encoded)).toBe(subject);
+  });
+
+  it("encodes non-ASCII display names in To and keeps addresses as is", () => {
+    const to = encodeAddressList('"عمر الحربي" <omar@example.com>, Layla <layla@example.com>, k@example.com');
+    const [omar, rest] = to.split("\r\n ");
+    expect(omar).toMatch(/^=\?UTF-8\?B\?[^?]+\?=$/);
+    expect(decodeWords(omar ?? "")).toBe("عمر الحربي");
+    expect(rest).toBe("<omar@example.com>, Layla <layla@example.com>, k@example.com");
   });
 
   it("follows every history page", async () => {

@@ -5,6 +5,7 @@ const ALGORITHM = "aes-256-gcm";
 const VERSION = "v1";
 const IV_BYTES = 12;
 const KEY_BYTES = 32;
+const TAG_BYTES = 16;
 
 /** Reads the 32-byte key from `TOKEN_ENCRYPTION_KEY` (base64). */
 export function loadEncryptionKey(
@@ -33,7 +34,13 @@ export function decryptSecret(ciphertext: string, key: Buffer): string {
   if (version !== VERSION || iv === undefined || tag === undefined || data === undefined || rest.length) {
     throw new Error("Unrecognized ciphertext format");
   }
-  const decipher = createDecipheriv(ALGORITHM, key, Buffer.from(iv, "base64"));
-  decipher.setAuthTag(Buffer.from(tag, "base64"));
+  const ivBytes = Buffer.from(iv, "base64");
+  const tagBytes = Buffer.from(tag, "base64");
+  // Reject truncated tags: GCM would otherwise accept a shorter, forgeable tag.
+  if (ivBytes.length !== IV_BYTES || tagBytes.length !== TAG_BYTES) {
+    throw new Error("Unrecognized ciphertext format");
+  }
+  const decipher = createDecipheriv(ALGORITHM, key, ivBytes, { authTagLength: TAG_BYTES });
+  decipher.setAuthTag(tagBytes);
   return Buffer.concat([decipher.update(Buffer.from(data, "base64")), decipher.final()]).toString("utf8");
 }
