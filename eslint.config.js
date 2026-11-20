@@ -10,6 +10,10 @@ const SEND = "'send'";
 const neverSendSelectors = [
   // x.messages.send, x["drafts"]["send"]
   `MemberExpression${named("property", SEND)}${named("object.property", MAILBOX)}`,
+  // const { messages } = x.users; messages.send()
+  `MemberExpression${named("property", SEND)}${named("object", MAILBOX)}`,
+  // x.drafts[`send`]
+  `MemberExpression[property.type='TemplateLiteral'][property.quasis.0.value.cooked='send']`,
   // const { send } = x.messages
   `VariableDeclarator${named("init.property", MAILBOX)} > ObjectPattern > Property${named("key", SEND)}`,
   // const { messages: { send } } = x.users
