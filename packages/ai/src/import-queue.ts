@@ -62,6 +62,7 @@ const replySchema = z.object({
       effortMin: z.number().int().nullable(),
       waitingOn: z.string().nullable(),
       parentIndex: z.number().int().nullable(),
+      parentContextLine: z.number().int().nullable(),
       done: z.boolean(),
       confidence: z.number(),
     }),
@@ -80,78 +81,109 @@ export const IMPORT_QUEUE_SYSTEM = `You turn Tariq's task queue, imported from a
 
 About Tariq: a delivery leader who wears several hats (delivery, people management, his own learning, travel and personal life). His working week is Sunday to Thursday; Friday and Saturday are the weekend. He lives in Asia/Riyadh.
 
-Input: a JSON object per line with its index "i", nesting "level" (0 is top level), "done" and "text". You may receive one chunk of a longer queue; use the line indexes exactly as given.
+Input: a JSON object per line with its index "i", nesting "level" (0 is top level), "done" and "text". You may receive one chunk of a longer queue; use the line indexes exactly as given. A chunk that starts in the middle of a nested list has a <context> section before the <queue>: those lines were handled in an earlier chunk and are there only so you know what the queue lines belong to. Never return a task for a context line.
 
 Return one task per actionable line, in queue order:
 - sourceLineIndexes: the input line indexes the task came from. Usually one line; merge only when a line is plainly a continuation of the one before. Skip headings, blank or purely decorative lines, and notes that are not tasks, but keep a heading's index on the task it introduces if it adds meaning.
 - title: imperative, specific, at most 80 characters ("Send Q3 budget to Finance", not "Budget").
 - area: work, learning, travel or personal.
-- done: true for every line marked done. Never mark a done line as not done.
+- done: true when its lines are marked done, otherwise false.
 - dueDate (YYYY-MM-DD) and dueDateConfidence: "stated" when the text gives a date or a day that resolves to one; "guessed" only when the text implies a deadline without stating it ("before the offsite", "end of week"); otherwise dueDate null and "none". Never invent a deadline. Resolve relative dates from today's date in the request, using the Sunday to Thursday week ("end of week" is Thursday).
 - effortMin: minutes, only when the text states or clearly implies the effort; otherwise null.
 - waitingOn: the person or thing the task is blocked on, only when the text says so; otherwise null.
 - parentIndex: when a nested line is a step of the line above it, the position (0-based) in your returned tasks array of its parent task, which must come earlier. Top-level tasks use null.
+- parentContextLine: when a nested line is a step of a context line instead, that context line's index "i" (and parentIndex null); otherwise null.
 - confidence: 0 to 1, how sure you are that this task reflects what Tariq meant.`;
 
 export async function proposeTasksFromQueue(ai: AiClient, input: ProposeTasksInput): Promise<ProposedTask[]> {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.today))
-    throw new Error(`today must be YYYY-MM-DD, got "${input.today}"`);
+  const weekday = weekdayOf(input.today);
   const timeZone = input.timeZone ?? DEFAULT_WORK_WEEK.timeZone;
-  const weekday = WEEKDAYS[dayOfWeekIn(new Date(`${input.today}T12:00:00Z`), "UTC")];
+  const lineJson = (i: number) => {
+    const { level, done, text } = input.lines[i]!;
+    return JSON.stringify({ i, level, done, text });
+  };
 
   const result: ProposedTask[] = [];
   for (const [chunkNumber, chunk] of chunkLines(input.lines).entries()) {
+    const prompt = [`Today is ${input.today} (${weekday}) in ${timeZone}.`];
+    if (chunk.context.length > 0) prompt.push("<context>", ...chunk.context.map(lineJson), "</context>");
+    prompt.push("<queue>", ...chunk.lines.map(lineJson), "</queue>");
+
     const reply = await ai.generateJson({
       model: EXTRACTION_MODEL,
       purpose: "import-queue",
       system: IMPORT_QUEUE_SYSTEM,
-      prompt: [
-        `Today is ${input.today} (${weekday}) in ${timeZone}.`,
-        "<queue>",
-        ...chunk.map((i) =>
-          JSON.stringify({
-            i,
-            level: input.lines[i]!.level,
-            done: input.lines[i]!.done,
-            text: input.lines[i]!.text,
-          }),
-        ),
-        "</queue>",
-      ].join("\n"),
+      prompt: prompt.join("\n"),
       schema: replySchema,
     });
     const report = (item: number, problem: string) => input.onIssue?.({ chunk: chunkNumber, item, problem });
-    result.push(...validateChunk(reply.tasks, chunk, input.lines, result.length, report));
+    result.push(...validateChunk(reply.tasks, chunk, input.lines, result, report));
   }
   return result;
 }
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-/** Splits line indexes into chunks of about CHUNK_SIZE, preferring to cut before a top-level line. */
-export function chunkLines(lines: readonly QueueLine[]): number[][] {
-  const chunks: number[][] = [];
-  let current: number[] = [];
+/** Weekday name of a YYYY-MM-DD calendar date; throws if it is not a real date. */
+function weekdayOf(date: string): string {
+  const noon = new Date(`${date}T12:00:00Z`);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+    Number.isNaN(noon.getTime()) ||
+    !noon.toISOString().startsWith(date)
+  ) {
+    throw new Error(`today must be a real date in YYYY-MM-DD form, got "${date}"`);
+  }
+  return WEEKDAYS[dayOfWeekIn(noon, "UTC")]!;
+}
+
+export interface Chunk {
+  /** Ancestor lines from earlier chunks, shown read-only when a nested list was cut. */
+  context: number[];
+  lines: number[];
+}
+
+/**
+ * Splits line indexes into chunks of about CHUNK_SIZE, preferring to cut before a top-level line.
+ * When a long nested list forces a cut at MAX_CHUNK_SIZE, the next chunk carries the cut line's
+ * ancestors as context so its steps can still point at their parent.
+ */
+export function chunkLines(lines: readonly QueueLine[]): Chunk[] {
+  const chunks: Chunk[] = [];
+  let current: Chunk = { context: [], lines: [] };
   lines.forEach((line, i) => {
-    const full = current.length >= CHUNK_SIZE && (line.level === 0 || current.length >= MAX_CHUNK_SIZE);
-    if (full) {
+    const size = current.lines.length;
+    if (size >= CHUNK_SIZE && (line.level === 0 || size >= MAX_CHUNK_SIZE)) {
       chunks.push(current);
-      current = [];
+      current = { context: ancestorsOf(lines, i), lines: [] };
     }
-    current.push(i);
+    current.lines.push(i);
   });
-  if (current.length > 0) chunks.push(current);
+  if (current.lines.length > 0) chunks.push(current);
   return chunks;
+}
+
+function ancestorsOf(lines: readonly QueueLine[], index: number): number[] {
+  const ancestors: number[] = [];
+  let level = lines[index]!.level;
+  for (let i = index - 1; i >= 0 && level > 0; i--) {
+    if (lines[i]!.level < level) {
+      ancestors.unshift(i);
+      level = lines[i]!.level;
+    }
+  }
+  return ancestors;
 }
 
 function validateChunk(
   tasks: readonly ReplyTask[],
-  chunk: readonly number[],
+  chunk: Chunk,
   lines: readonly QueueLine[],
-  offset: number,
+  earlier: readonly ProposedTask[],
   report: (item: number, problem: string) => void,
 ): ProposedTask[] {
-  const inChunk = new Set(chunk);
+  const offset = earlier.length;
+  const inChunk = new Set(chunk.lines);
   const kept: ProposedTask[] = [];
   // Position in the model's reply -> position in the returned array, for remapping parentIndex.
   const newIndex = new Map<number, number>();
@@ -169,13 +201,15 @@ function validateChunk(
     }
 
     const { title, dueDate, effortMin, confidence } = checked.data;
+    // `done` comes from the doc, never from the model.
+    const done = sources.every((i) => lines[i]!.done);
+    if (task.done !== done) report(item, `model said done=${task.done}; kept the doc's done=${done}`);
     const proposed: ProposedTask = {
       sourceLineIndexes: sources.sort((a, b) => a - b),
       title,
       area: task.area,
       dueDateConfidence: "none",
-      // Lines marked done in the doc stay done.
-      done: task.done || sources.every((i) => lines[i]!.done),
+      done,
       confidence,
     };
     if (dueDate !== null && task.dueDateConfidence !== "none") {
@@ -190,6 +224,12 @@ function validateChunk(
       const parent = task.parentIndex < item ? newIndex.get(task.parentIndex) : undefined;
       if (parent === undefined)
         report(item, "parentIndex does not point to an earlier kept task; made top level");
+      else proposed.parentIndex = parent;
+    } else if (task.parentContextLine !== null) {
+      const parent = chunk.context.includes(task.parentContextLine)
+        ? earlier.findLastIndex((t) => t.sourceLineIndexes.includes(task.parentContextLine!))
+        : -1;
+      if (parent < 0) report(item, "parentContextLine does not match an earlier task; made top level");
       else proposed.parentIndex = parent;
     }
 

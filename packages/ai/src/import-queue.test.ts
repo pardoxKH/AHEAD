@@ -18,6 +18,7 @@ interface ReplyTask {
   effortMin: number | null;
   waitingOn: string | null;
   parentIndex: number | null;
+  parentContextLine: number | null;
   done: boolean;
   confidence: number;
 }
@@ -32,6 +33,7 @@ function task(sourceLineIndexes: number[], overrides: Partial<ReplyTask> = {}): 
     effortMin: null,
     waitingOn: null,
     parentIndex: null,
+    parentContextLine: null,
     done: false,
     confidence: 0.9,
     ...overrides,
@@ -52,19 +54,23 @@ const line = (text: string, level = 0, done = false): QueueLine => ({ text, leve
 
 describe("chunkLines", () => {
   it("keeps short queues in one chunk", () => {
-    expect(chunkLines([line("a"), line("b")])).toEqual([[0, 1]]);
+    expect(chunkLines([line("a"), line("b")])).toEqual([{ context: [], lines: [0, 1] }]);
   });
 
   it("splits about every CHUNK_SIZE lines, before a top-level line", () => {
     const lines = Array.from({ length: 130 }, (_, i) => line(`l${i}`, i === 60 || i === 61 ? 1 : 0));
     const chunks = chunkLines(lines);
-    expect(chunks.map((c) => c.length)).toEqual([62, 60, 8]);
-    expect(chunks.flat()).toEqual(lines.map((_, i) => i));
+    expect(chunks.map((c) => c.lines.length)).toEqual([62, 60, 8]);
+    expect(chunks.flatMap((c) => c.lines)).toEqual(lines.map((_, i) => i));
+    expect(chunks.every((c) => c.context.length === 0)).toBe(true);
   });
 
-  it("caps a chunk when a parent has a very long list of steps", () => {
-    const lines = Array.from({ length: 200 }, (_, i) => line(`l${i}`, i === 0 ? 0 : 1));
-    expect(chunkLines(lines).map((c) => c.length)).toEqual([90, 90, 20]);
+  it("caps a chunk in a long list of steps and carries the ancestors as context", () => {
+    // 0: level 0, 1: level 1, then 198 level-2 steps
+    const lines = Array.from({ length: 200 }, (_, i) => line(`l${i}`, Math.min(i, 2)));
+    const chunks = chunkLines(lines);
+    expect(chunks.map((c) => c.lines.length)).toEqual([90, 90, 20]);
+    expect(chunks.map((c) => c.context)).toEqual([[], [0, 1], [0, 1]]);
   });
 });
 
@@ -162,7 +168,67 @@ describe("proposeTasksFromQueue", () => {
         confidence: 0.9,
       },
     ]);
-    expect(issues.map((i) => i.item)).toEqual([1, 4, 5, 6, 7, 8]);
+    expect(issues.map((i) => i.item)).toEqual([1, 3, 4, 5, 6, 7, 8]);
+  });
+
+  it("takes done from the doc, not the model, and reports a disagreement", async () => {
+    const lines = [line("Done in doc", 0, true), line("Open in doc"), line("Half", 0, true), line("done", 1)];
+    const { ai } = fakeAi([
+      task([0], { done: false }),
+      task([1], { done: true }),
+      task([2, 3], { done: true }),
+    ]);
+    const issues: ImportIssue[] = [];
+    const tasks = await proposeTasksFromQueue(ai, {
+      lines,
+      today: "2026-11-20",
+      onIssue: (i) => issues.push(i),
+    });
+    expect(tasks.map((t) => t.done)).toEqual([true, false, false]);
+    expect(issues.map((i) => i.item)).toEqual([0, 1, 2]);
+    expect(issues[1]!.problem).toContain("kept the doc's done=false");
+  });
+
+  it("links steps after a forced cut back to the parent from the earlier chunk", async () => {
+    const lines = [line("Plan the offsite"), ...Array.from({ length: 99 }, (_, i) => line(`step ${i}`, 1))];
+    const first = [task([0]), ...Array.from({ length: 89 }, (_, i) => task([i + 1], { parentIndex: 0 }))];
+    const second = Array.from({ length: 10 }, (_, i) => task([90 + i], { parentContextLine: 0 }));
+    const { ai, requests } = fakeAi(first, second);
+    const issues: ImportIssue[] = [];
+
+    const tasks = await proposeTasksFromQueue(ai, {
+      lines,
+      today: "2026-11-20",
+      onIssue: (i) => issues.push(i),
+    });
+    expect(requests).toHaveLength(2);
+    const contextPart = requests[1]!.prompt.split("<queue>")[0]!;
+    expect(contextPart).toContain(
+      '<context>\n{"i":0,"level":0,"done":false,"text":"Plan the offsite"}\n</context>',
+    );
+    expect(requests[1]!.prompt.split("<queue>")[1]).not.toContain('"i":0,');
+    expect(tasks).toHaveLength(100);
+    expect(tasks.slice(1).every((t) => t.parentIndex === 0)).toBe(true);
+    expect(issues).toEqual([]);
+  });
+
+  it("rejects a context line as a task source and a parentContextLine outside the context", async () => {
+    const lines = [line("Parent"), ...Array.from({ length: 99 }, (_, i) => line(`step ${i}`, 1))];
+    const first = [task([0]), ...Array.from({ length: 89 }, (_, i) => task([i + 1], { parentIndex: 0 }))];
+    const second = [task([0]), task([90], { parentContextLine: 5 })];
+    const { ai } = fakeAi(first, second);
+    const issues: ImportIssue[] = [];
+    const tasks = await proposeTasksFromQueue(ai, {
+      lines,
+      today: "2026-11-20",
+      onIssue: (i) => issues.push(i),
+    });
+    expect(tasks).toHaveLength(91);
+    expect(tasks[90]).not.toHaveProperty("parentIndex");
+    expect(issues.map((i) => [i.chunk, i.item])).toEqual([
+      [1, 0],
+      [1, 1],
+    ]);
   });
 
   it("drops the parent link of a child whose parent was dropped", async () => {
@@ -172,8 +238,10 @@ describe("proposeTasksFromQueue", () => {
     expect(tasks[0]).not.toHaveProperty("parentIndex");
   });
 
-  it("rejects a malformed today", async () => {
+  it("rejects a malformed or impossible today", async () => {
     const { ai } = fakeAi();
-    await expect(proposeTasksFromQueue(ai, { lines: [], today: "20/11/2026" })).rejects.toThrow("YYYY-MM-DD");
+    for (const today of ["20/11/2026", "2026-02-30", "2026-13-01"]) {
+      await expect(proposeTasksFromQueue(ai, { lines: [], today })).rejects.toThrow("real date");
+    }
   });
 });

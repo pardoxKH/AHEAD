@@ -79,18 +79,66 @@ describe("createAiClient", () => {
   it("reports usage and cost without prompt contents", async () => {
     const { ai, usage } = setup(reply('{"answer":"ok"}'));
     await ai.generateJson(request);
+    const tokens = { inputTokens: 1000, outputTokens: 500, cacheReadTokens: 2000, cacheCreationTokens: 0 };
     expect(usage).toEqual([
       {
         model: EXTRACTION_MODEL,
         purpose: "test",
-        inputTokens: 1000,
-        outputTokens: 500,
-        cacheReadTokens: 2000,
-        cacheCreationTokens: 0,
+        ...tokens,
         costUsd: (1000 * 4 + 500 * 20 + 2000 * 0.2) / 1e6,
+        unpricedModels: [],
+        entries: [{ model: EXTRACTION_MODEL, ...tokens }],
       },
     ]);
     expect(JSON.stringify(usage)).not.toContain("SECRET");
+  });
+
+  it("prices each usage iteration by its own model after a fallback", async () => {
+    const iteration = (type: string, model: string, input: number, output: number) => ({
+      type,
+      model,
+      input_tokens: input,
+      output_tokens: output,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 1000,
+      cache_creation: null,
+    });
+    const response = reply('{"answer":"ok"}', { model: "claude-opus-5" });
+    response.usage.iterations = [
+      iteration("message", EXTRACTION_MODEL, 2000, 0),
+      iteration("fallback_message", "claude-opus-5", 2000, 300),
+    ] as NonNullable<Message["usage"]["iterations"]>;
+    const { ai, usage } = setup(response);
+    await ai.generateJson(request);
+
+    const event = usage[0]!;
+    expect(event.model).toBe("claude-opus-5");
+    expect(event.entries.map((e) => e.model)).toEqual([EXTRACTION_MODEL, "claude-opus-5"]);
+    expect(event.inputTokens).toBe(4000);
+    expect(event.outputTokens).toBe(300);
+    const declined = 2000 * 4 + 1000 * 4 * 1.25;
+    const fallback = 2000 * 5 + 300 * 25 + 1000 * 5 * 1.25;
+    expect(event.costUsd).toBeCloseTo((declined + fallback) / 1e6, 10);
+    expect(event.unpricedModels).toEqual([]);
+  });
+
+  it("reports a null cost and names models it cannot price", async () => {
+    const response = reply('{"answer":"ok"}', { model: "claude-mystery-9" });
+    response.usage.iterations = [
+      {
+        type: "fallback_message",
+        model: "claude-mystery-9",
+        input_tokens: 10,
+        output_tokens: 10,
+        cache_read_input_tokens: 0,
+        cache_creation_input_tokens: 0,
+        cache_creation: null,
+      },
+    ];
+    const { ai, usage } = setup(response);
+    await ai.generateJson(request);
+    expect(usage[0]!.costUsd).toBeNull();
+    expect(usage[0]!.unpricedModels).toEqual(["claude-mystery-9"]);
   });
 
   it("throws AiRefusalError on a refusal, after reporting usage", async () => {

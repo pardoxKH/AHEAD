@@ -11,16 +11,29 @@ export interface MessagesApi {
   create(params: CreateParams): PromiseLike<Message>;
 }
 
-export interface UsageEvent {
-  /** The model that served the request (a server-side fallback may differ from the one requested). */
+export interface UsageEntry {
   model: string;
-  purpose: string;
   inputTokens: number;
   outputTokens: number;
   cacheReadTokens: number;
   cacheCreationTokens: number;
-  /** `null` when the serving model is not in the price table. */
+}
+
+export interface UsageEvent {
+  /** The model that served the request (a server-side fallback may differ from the one requested). */
+  model: string;
+  purpose: string;
+  /** Token totals across all entries. */
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheCreationTokens: number;
+  /** `null` when any entry's model is not in the price table; see `unpricedModels`. */
   costUsd: number | null;
+  /** Models that ran but have no price, so the app can flag them. */
+  unpricedModels: string[];
+  /** Per-model usage: one entry per `usage.iterations` item, or one for the whole request. */
+  entries: UsageEntry[];
 }
 
 export interface AiClientOptions {
@@ -89,7 +102,7 @@ export function createAiClient(options: AiClientOptions): AiClient {
       };
 
       const response = await messages.create(params);
-      await reportUsage(options.onUsage, request.purpose, response);
+      await options.onUsage(usageEvent(request.purpose, request.model, response));
 
       if (response.stop_reason === "refusal") {
         throw new AiRefusalError(response.stop_details?.category ?? null);
@@ -112,17 +125,43 @@ export function createAiClient(options: AiClientOptions): AiClient {
   };
 }
 
-async function reportUsage(onUsage: AiClientOptions["onUsage"], purpose: string, response: Message) {
-  const usage = {
-    inputTokens: response.usage.input_tokens,
-    outputTokens: response.usage.output_tokens,
-    cacheReadTokens: response.usage.cache_read_input_tokens ?? 0,
-    cacheCreationTokens: response.usage.cache_creation_input_tokens ?? 0,
-  };
-  await onUsage({
+/**
+ * One usage event per request. When the response carries `usage.iterations` (for example a
+ * declined Opus attempt followed by a fallback), each entry is priced by its own model.
+ */
+export function usageEvent(purpose: string, requestedModel: string, response: Message): UsageEvent {
+  const { usage } = response;
+  const entries: UsageEntry[] = usage.iterations
+    ? usage.iterations.map((it) => ({
+        model: ("model" in it && it.model) || requestedModel,
+        inputTokens: it.input_tokens,
+        outputTokens: it.output_tokens,
+        cacheReadTokens: it.cache_read_input_tokens,
+        cacheCreationTokens: it.cache_creation_input_tokens,
+      }))
+    : [
+        {
+          model: response.model,
+          inputTokens: usage.input_tokens,
+          outputTokens: usage.output_tokens,
+          cacheReadTokens: usage.cache_read_input_tokens ?? 0,
+          cacheCreationTokens: usage.cache_creation_input_tokens ?? 0,
+        },
+      ];
+
+  const costs = entries.map((entry) => estimateCostUsd(entry.model, entry));
+  const unpricedModels = [...new Set(entries.filter((_, i) => costs[i] === null).map((e) => e.model))];
+  const sum = (key: "inputTokens" | "outputTokens" | "cacheReadTokens" | "cacheCreationTokens") =>
+    entries.reduce((total, entry) => total + entry[key], 0);
+  return {
     model: response.model,
     purpose,
-    ...usage,
-    costUsd: estimateCostUsd(response.model, usage),
-  });
+    inputTokens: sum("inputTokens"),
+    outputTokens: sum("outputTokens"),
+    cacheReadTokens: sum("cacheReadTokens"),
+    cacheCreationTokens: sum("cacheCreationTokens"),
+    costUsd: unpricedModels.length > 0 ? null : costs.reduce<number>((total, c) => total + (c ?? 0), 0),
+    unpricedModels,
+    entries,
+  };
 }
