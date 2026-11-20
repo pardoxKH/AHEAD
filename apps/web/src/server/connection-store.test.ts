@@ -98,7 +98,7 @@ describe.skipIf(!databaseUrl)("Google connection storage (integration)", () => {
     const revokeToken = vi.fn().mockResolvedValue(undefined);
 
     await expect(deleteAccount(userId, { db: handle.db, encryptionKey: key, revokeToken })).resolves.toEqual({
-      revoked: true,
+      revocation: "revoked",
     });
     expect(revokeToken).toHaveBeenCalledWith("refresh-token");
     expect(await handle.db.select().from(users)).toHaveLength(0);
@@ -116,8 +116,20 @@ describe.skipIf(!databaseUrl)("Google connection storage (integration)", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(deleteAccount(userId, { db: handle.db, encryptionKey: key, revokeToken })).resolves.toEqual({
-      revoked: false,
+      revocation: "failed",
     });
+    expect(await handle.db.select().from(users)).toHaveLength(0);
+  });
+
+  it("reports nothing to revoke when no token is stored", async () => {
+    const [user] = await handle.db.insert(users).values({ email }).returning();
+    if (!user) throw new Error("user not inserted");
+    const revokeToken = vi.fn();
+
+    await expect(deleteAccount(user.id, { db: handle.db, encryptionKey: key, revokeToken })).resolves.toEqual(
+      { revocation: "none" },
+    );
+    expect(revokeToken).not.toHaveBeenCalled();
     expect(await handle.db.select().from(users)).toHaveLength(0);
   });
 });

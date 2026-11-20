@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type * as GoogleModule from "@ahead/google";
 import {
+  createOAuthClient,
   decryptSecret,
   exchangeCode,
   loadEncryptionKey,
@@ -12,6 +13,7 @@ import { completeGoogleSignIn, type CallbackDeps, type CallbackInput } from "./g
 
 vi.mock("@ahead/google", async (importOriginal) => ({
   ...(await importOriginal<typeof GoogleModule>()),
+  createOAuthClient: vi.fn(),
   exchangeCode: vi.fn(),
   verifyAllowedUser: vi.fn(),
 }));
@@ -19,15 +21,18 @@ vi.mock("@ahead/google", async (importOriginal) => ({
 const SCOPES = ["openid", "email", "https://www.googleapis.com/auth/gmail.readonly"];
 const input: CallbackInput = { code: "auth-code", returnedState: "s1", cookieState: "s1", error: null };
 
-function mockExchange(tokens: { id_token?: string; refresh_token?: string }) {
+function mockExchange(tokens: { id_token?: string; refresh_token?: string; access_token?: string }) {
   vi.mocked(exchangeCode).mockResolvedValue({ tokens, grantedScopes: SCOPES });
 }
 
 describe("completeGoogleSignIn", () => {
   let deps: CallbackDeps & { saveConnection: ReturnType<typeof vi.fn> };
+  let revokeToken: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.resetAllMocks();
+    revokeToken = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(createOAuthClient).mockReturnValue({ revokeToken } as never);
     deps = { env: testEnv, saveConnection: vi.fn().mockResolvedValue({ userId: "user-1" }) };
     mockExchange({ id_token: "id-token", refresh_token: "refresh-token" });
     vi.mocked(verifyAllowedUser).mockResolvedValue("owner@example.com");
@@ -47,12 +52,35 @@ describe("completeGoogleSignIn", () => {
     expect(saved.encryptedRefreshToken).not.toContain("refresh-token");
     const key = loadEncryptionKey({ TOKEN_ENCRYPTION_KEY: testEnv.TOKEN_ENCRYPTION_KEY });
     expect(decryptSecret(saved.encryptedRefreshToken, key)).toBe("refresh-token");
+    expect(revokeToken).not.toHaveBeenCalled();
   });
 
-  it("rejects any other Google account without storing anything", async () => {
+  it("rejects any other Google account, stores nothing and revokes its new token", async () => {
     vi.mocked(verifyAllowedUser).mockRejectedValue(new NotAllowedUserError("someone@example.com"));
     await expect(completeGoogleSignIn(input, deps)).resolves.toEqual({ ok: false, reason: "not_allowed" });
     expect(deps.saveConnection).not.toHaveBeenCalled();
+    expect(revokeToken).toHaveBeenCalledWith("refresh-token");
+  });
+
+  it("revokes the access token when a refused grant has no refresh token", async () => {
+    mockExchange({ id_token: "id-token", access_token: "access-token" });
+    vi.mocked(verifyAllowedUser).mockRejectedValue(new NotAllowedUserError("someone@example.com"));
+    await completeGoogleSignIn(input, deps);
+    expect(revokeToken).toHaveBeenCalledWith("access-token");
+  });
+
+  it("still refuses the account when revoking its token fails", async () => {
+    vi.mocked(verifyAllowedUser).mockRejectedValue(new NotAllowedUserError("someone@example.com"));
+    revokeToken.mockRejectedValue(new Error("network"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await expect(completeGoogleSignIn(input, deps)).resolves.toEqual({ ok: false, reason: "not_allowed" });
+  });
+
+  it("reports other ID token verification errors as failures, not as a refused account", async () => {
+    vi.mocked(verifyAllowedUser).mockRejectedValue(new Error("Invalid token signature"));
+    await expect(completeGoogleSignIn(input, deps)).resolves.toEqual({ ok: false, reason: "failed" });
+    expect(deps.saveConnection).not.toHaveBeenCalled();
+    expect(revokeToken).toHaveBeenCalledWith("refresh-token");
   });
 
   it("passes no refresh token when Google omits it, so the stored one is kept", async () => {
@@ -86,5 +114,6 @@ describe("completeGoogleSignIn", () => {
     mockExchange({ refresh_token: "refresh-token" });
     await expect(completeGoogleSignIn(input, deps)).resolves.toEqual({ ok: false, reason: "failed" });
     expect(deps.saveConnection).not.toHaveBeenCalled();
+    expect(revokeToken).toHaveBeenCalledWith("refresh-token");
   });
 });

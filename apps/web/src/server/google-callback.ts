@@ -1,4 +1,11 @@
-import { encryptSecret, exchangeCode, loadEncryptionKey, verifyAllowedUser } from "@ahead/google";
+import type { Credentials, OAuth2Client } from "google-auth-library";
+import {
+  encryptSecret,
+  exchangeCode,
+  loadEncryptionKey,
+  NotAllowedUserError,
+  verifyAllowedUser,
+} from "@ahead/google";
 import type { Env } from "../env";
 import type { GoogleConnection } from "./connection-store";
 import { googleClient } from "./google-client";
@@ -35,7 +42,10 @@ export async function completeGoogleSignIn(
   const { env } = deps;
   const client = googleClient(env);
   const { tokens, grantedScopes } = await exchangeCode(client, input.code);
-  if (!tokens.id_token) return { ok: false, reason: "failed" };
+  if (!tokens.id_token) {
+    await discardTokens(client, tokens);
+    return { ok: false, reason: "failed" };
+  }
 
   let email: string;
   try {
@@ -44,8 +54,10 @@ export async function completeGoogleSignIn(
       audience: env.GOOGLE_CLIENT_ID,
       allowedEmail: env.ALLOWED_EMAIL,
     });
-  } catch {
-    return { ok: false, reason: "not_allowed" };
+  } catch (err) {
+    // Only a NotAllowedUserError means "wrong account"; anything else (bad signature, network) is a failure.
+    await discardTokens(client, tokens);
+    return { ok: false, reason: err instanceof NotAllowedUserError ? "not_allowed" : "failed" };
   }
 
   const key = loadEncryptionKey({ TOKEN_ENCRYPTION_KEY: env.TOKEN_ENCRYPTION_KEY });
@@ -55,4 +67,16 @@ export async function completeGoogleSignIn(
     scopes: grantedScopes,
   });
   return { ok: true, userId };
+}
+
+/** Best effort: revoke tokens we will not keep, so a refused grant is not left live at Google. */
+async function discardTokens(client: Pick<OAuth2Client, "revokeToken">, tokens: Credentials) {
+  // Revoking the refresh token also revokes access tokens issued from it.
+  const token = tokens.refresh_token ?? tokens.access_token;
+  if (!token) return;
+  try {
+    await client.revokeToken(token);
+  } catch (err) {
+    console.error("Revoking an unused Google token failed:", (err as Error).name);
+  }
 }

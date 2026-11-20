@@ -18,11 +18,11 @@ export default async function SignInPage({
       <h1>Ahead</h1>
       {deleted && (
         <p className="notice">
-          Your data was deleted.{" "}
-          {deleted === "revoked" ? (
-            "Google access was revoked."
-          ) : (
+          Your data was deleted.
+          {deleted === "revoked" && " Google access was revoked."}
+          {deleted === "failed" && (
             <>
+              {" "}
               Google did not confirm revoking access; remove Ahead at{" "}
               <a href="https://myaccount.google.com/permissions">your Google account permissions</a>.
             </>

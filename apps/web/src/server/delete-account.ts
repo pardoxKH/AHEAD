@@ -12,25 +12,28 @@ export interface DeleteDeps {
 
 /**
  * Revokes the stored Google token (best effort) and deletes the user row; every other table
- * cascades from it. Returns whether Google confirmed the revocation.
+ * cascades from it. `none` means there was no stored token, so nothing to revoke.
  */
-export async function deleteAccount(userId: string, deps: DeleteDeps): Promise<{ revoked: boolean }> {
+export type Revocation = "revoked" | "failed" | "none";
+
+export async function deleteAccount(userId: string, deps: DeleteDeps): Promise<{ revocation: Revocation }> {
   const [token] = await deps.db
     .select({ encrypted: oauthTokens.encryptedRefreshToken })
     .from(oauthTokens)
     .where(eq(oauthTokens.userId, userId));
 
-  let revoked = false;
+  let revocation: Revocation = "none";
   if (token) {
     try {
       await deps.revokeToken(decryptSecret(token.encrypted, deps.encryptionKey));
-      revoked = true;
+      revocation = "revoked";
     } catch (err) {
       // Log only the error type: messages from Google's client can echo request details.
       console.error("Google token revocation failed:", (err as Error).name);
+      revocation = "failed";
     }
   }
 
   await deps.db.delete(users).where(eq(users.id, userId));
-  return { revoked };
+  return { revocation };
 }
