@@ -18,6 +18,11 @@ async function pgErrorCode(promise: Promise<unknown>): Promise<string | undefine
   throw new Error("expected the query to fail");
 }
 
+// These tests drop and recreate the schema. Refuse anything but a *_test database.
+if (databaseUrl && !new URL(databaseUrl).pathname.endsWith("_test")) {
+  throw new Error("DATABASE_URL must point at a database whose name ends in _test; these tests wipe it.");
+}
+
 describe.skipIf(!databaseUrl)("db (integration)", () => {
   let handle: DbHandle;
   let userId: string;

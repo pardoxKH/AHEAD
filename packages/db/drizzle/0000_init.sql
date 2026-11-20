@@ -181,6 +181,7 @@ ALTER TABLE "tasks" ADD CONSTRAINT "tasks_owner_contact_id_contacts_id_fk" FOREI
 ALTER TABLE "tasks" ADD CONSTRAINT "tasks_waiting_on_contact_id_contacts_id_fk" FOREIGN KEY ("waiting_on_contact_id") REFERENCES "public"."contacts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tasks" ADD CONSTRAINT "tasks_goal_id_goals_id_fk" FOREIGN KEY ("goal_id") REFERENCES "public"."goals"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tasks" ADD CONSTRAINT "tasks_source_id_sources_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."sources"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "playbooks_user_key_idx" ON "playbooks" USING btree ("user_id","key");--> statement-breakpoint
 CREATE UNIQUE INDEX "sources_user_gmail_message_uq" ON "sources" USING btree ("user_id","gmail_message_id") WHERE "sources"."gmail_message_id" is not null;--> statement-breakpoint
 CREATE INDEX "tasks_user_status_idx" ON "tasks" USING btree ("user_id","status");--> statement-breakpoint
 CREATE INDEX "tasks_root_idx" ON "tasks" USING btree ("root_id");--> statement-breakpoint

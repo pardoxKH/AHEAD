@@ -1,5 +1,5 @@
 {
-  "id": "d087baea-1b4d-4731-842b-1240af870f37",
+  "id": "35d22c81-2bf7-40e2-bef2-ac1bf1a2b8bf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -661,7 +661,29 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "playbooks_user_key_idx": {
+          "name": "playbooks_user_key_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "playbooks_user_id_users_id_fk": {
           "name": "playbooks_user_id_users_id_fk",

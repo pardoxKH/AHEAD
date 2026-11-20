@@ -179,16 +179,20 @@ export const taskDeps = pgTable(
   ],
 );
 
-export const playbooks = pgTable("playbooks", {
-  id: id(),
-  userId: userId(),
-  key: text("key").notNull(),
-  name: text("name").notNull(),
-  steps: jsonb("steps")
-    .notNull()
-    .default(sql`'[]'::jsonb`),
-  ...timestamps,
-});
+export const playbooks = pgTable(
+  "playbooks",
+  {
+    id: id(),
+    userId: userId(),
+    key: text("key").notNull(),
+    name: text("name").notNull(),
+    steps: jsonb("steps")
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    ...timestamps,
+  },
+  (t) => [uniqueIndex("playbooks_user_key_idx").on(t.userId, t.key)],
+);
 
 export const planRuns = pgTable("plan_runs", {
   id: id(),
