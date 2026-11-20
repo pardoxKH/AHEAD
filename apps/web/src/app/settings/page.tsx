@@ -25,6 +25,19 @@ export default async function SettingsPage() {
         <dd>{workingDays}</dd>
       </dl>
 
+      <h2>Connected scopes</h2>
+      {user.scopes.length > 0 ? (
+        <ul className="list">
+          {user.scopes.map((scope) => (
+            <li key={scope}>
+              <code>{scope}</code>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="muted">No Google scopes are connected.</p>
+      )}
+
       <h2>Delete all my data</h2>
       <p className="muted">
         Revokes Ahead&apos;s access to your Google account and deletes everything Ahead stored.

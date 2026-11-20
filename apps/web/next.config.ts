@@ -8,7 +8,7 @@ interface WebpackConfig {
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Workspace packages are TypeScript source; let Next compile them.
-  transpilePackages: ["@ahead/db", "@ahead/google"],
+  transpilePackages: ["@ahead/ai", "@ahead/core", "@ahead/db", "@ahead/google"],
   // Built with webpack (`--webpack`): the packages import siblings with NodeNext `.js` suffixes,
   // which Turbopack does not map to `.ts` files.
   webpack: (config: WebpackConfig) => {

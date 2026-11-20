@@ -11,7 +11,7 @@ describe("parseEnv", () => {
 
   it("names every missing variable", () => {
     expect(() => parseEnv({})).toThrow(
-      /DATABASE_URL.*GOOGLE_CLIENT_ID.*GOOGLE_CLIENT_SECRET.*APP_URL.*ALLOWED_EMAIL.*TOKEN_ENCRYPTION_KEY.*SESSION_SECRET/,
+      /DATABASE_URL.*GOOGLE_CLIENT_ID.*GOOGLE_CLIENT_SECRET.*APP_URL.*ALLOWED_EMAIL.*TOKEN_ENCRYPTION_KEY.*SESSION_SECRET.*ANTHROPIC_API_KEY/,
     );
   });
 

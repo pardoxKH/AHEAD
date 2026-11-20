@@ -15,6 +15,8 @@ const envSchema = z.object({
       message: `must be ${TOKEN_KEY_BYTES} bytes of base64`,
     }),
   SESSION_SECRET: z.string().min(32, "must be at least 32 characters"),
+  // Claude API key for the Google Doc import.
+  ANTHROPIC_API_KEY: z.string().min(1, "is required"),
 });
 
 export type Env = z.infer<typeof envSchema>;
