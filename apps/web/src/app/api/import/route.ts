@@ -6,12 +6,16 @@ import { parseDocLink } from "@/server/import/doc-link";
 import { loadImportUser } from "@/server/import/import-user";
 import { runImport } from "@/server/import/run-import";
 import { redirectTo } from "@/server/redirect";
+import { forbidden, isSameOrigin } from "@/server/same-origin";
 
 export const dynamic = "force-dynamic";
 // Claude may take a while on a long queue.
 export const maxDuration = 300;
 
 export async function POST(request: Request) {
+  // Starting an import spends Claude tokens: only accept it from Ahead's own pages.
+  if (!isSameOrigin(request.headers, getEnv().APP_URL)) return forbidden();
+
   const userId = await getSessionUserId();
   if (!userId) return redirectTo("/signin");
 
