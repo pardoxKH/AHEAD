@@ -21,7 +21,16 @@ const neverSendSelectors = [
 ];
 
 export default tseslint.config(
-  { ignores: ["**/dist/**", "**/.next/**", "**/node_modules/**", "**/coverage/**", "**/drizzle/**"] },
+  {
+    ignores: [
+      "**/dist/**",
+      "**/.next/**",
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/drizzle/**",
+      "**/next-env.d.ts",
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
