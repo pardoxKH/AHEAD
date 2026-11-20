@@ -1,0 +1,26 @@
+{
+  "name": "ahead",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.6"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit -p tsconfig.json && pnpm -r --parallel run typecheck",
+    "test": "vitest run",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.19.0",
+    "eslint": "^9.39.0",
+    "prettier": "^3.6.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.0"
+  }
+}

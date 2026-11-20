@@ -1,0 +1,22 @@
+{
+  "name": "@ahead/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "generate": "drizzle-kit generate",
+    "migrate": "node --experimental-strip-types src/migrate.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11"
+  }
+}
