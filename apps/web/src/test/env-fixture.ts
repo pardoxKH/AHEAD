@@ -9,6 +9,7 @@ export const rawTestEnv = {
   ALLOWED_EMAIL: "owner@example.com",
   TOKEN_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString("base64"),
   SESSION_SECRET: "s".repeat(32),
+  ANTHROPIC_API_KEY: "test-anthropic-key",
 } satisfies Record<keyof Env, string>;
 
 export const testEnv: Env = { ...rawTestEnv };

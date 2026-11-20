@@ -4,6 +4,7 @@ import { SESSION_COOKIE, sessionCookieOptions, stateCookieOptions } from "@/serv
 import { saveGoogleConnection } from "@/server/connection-store";
 import { getDb } from "@/server/db";
 import { completeGoogleSignIn, type CallbackResult } from "@/server/google-callback";
+import { NEXT_COOKIE, safeNextPath, withParam } from "@/server/next-path";
 import { STATE_COOKIE } from "@/server/oauth-state";
 import { redirectTo } from "@/server/redirect";
 import { signSession } from "@/server/session";
@@ -31,8 +32,14 @@ export async function GET(request: NextRequest) {
     result = { ok: false, reason: "failed" };
   }
 
-  const response = result.ok ? redirectTo("/") : redirectTo(`/signin?error=${result.reason}`);
+  // An incremental consent started from a page returns there; the path is validated again here.
+  const next = safeNextPath(request.cookies.get(NEXT_COOKIE)?.value);
+  let target = result.ok ? "/" : `/signin?error=${result.reason}`;
+  if (next) target = result.ok ? next : withParam(next, "consent", result.reason);
+
+  const response = redirectTo(target);
   response.cookies.set(STATE_COOKIE, "", { ...stateCookieOptions(), maxAge: 0 });
+  response.cookies.set(NEXT_COOKIE, "", { ...stateCookieOptions(), maxAge: 0 });
   if (result.ok) {
     response.cookies.set(
       SESSION_COOKIE,

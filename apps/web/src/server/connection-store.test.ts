@@ -1,35 +1,12 @@
-import { eq, sql } from "drizzle-orm";
-import pg from "pg";
+import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { auditLog, createDb, oauthTokens, runMigrations, users, type DbHandle } from "@ahead/db";
+import { auditLog, oauthTokens, users, type DbHandle } from "@ahead/db";
 import { encryptSecret } from "@ahead/google";
+import { freshTestDb } from "../test/test-db";
 import { MissingRefreshTokenError, saveGoogleConnection } from "./connection-store";
 import { deleteAccount } from "./delete-account";
 
 const databaseUrl = process.env.DATABASE_URL;
-
-/**
- * packages/db's tests drop and recreate the schema of DATABASE_URL while other files run, so this
- * file uses its own database next to it: `<name>_test` becomes `<name>_web_test`.
- */
-async function webTestDatabaseUrl(url: string): Promise<string> {
-  const parsed = new URL(url);
-  const name = parsed.pathname.slice(1);
-  if (!name.endsWith("_test"))
-    throw new Error("DATABASE_URL must name a *_test database; these tests wipe it.");
-  const webName = name.replace(/_test$/, "_web_test");
-
-  const admin = new pg.Client({ connectionString: url });
-  await admin.connect();
-  try {
-    const { rowCount } = await admin.query("select 1 from pg_database where datname = $1", [webName]);
-    if (!rowCount) await admin.query(`create database "${webName}"`);
-  } finally {
-    await admin.end();
-  }
-  parsed.pathname = `/${webName}`;
-  return parsed.toString();
-}
 
 describe.skipIf(!databaseUrl)("Google connection storage (integration)", () => {
   let handle: DbHandle;
@@ -37,11 +14,7 @@ describe.skipIf(!databaseUrl)("Google connection storage (integration)", () => {
   const key = Buffer.alloc(32, 3);
 
   beforeAll(async () => {
-    handle = createDb(await webTestDatabaseUrl(databaseUrl ?? ""));
-    await handle.db.execute(sql`drop schema if exists drizzle cascade`);
-    await handle.db.execute(sql`drop schema if exists public cascade`);
-    await handle.db.execute(sql`create schema public`);
-    await runMigrations(handle.db);
+    handle = await freshTestDb(databaseUrl ?? "", "web");
   });
 
   afterAll(async () => {

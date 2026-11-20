@@ -56,6 +56,8 @@ export const planBlockStateEnum = pgEnum("plan_block_state", [
   "done",
   "skipped",
 ]);
+// How sure the import was about a due date: stated in the text, guessed from it, or none.
+export const dueDateConfidenceEnum = pgEnum("due_date_confidence", ["stated", "guessed", "none"]);
 export const draftKindEnum = pgEnum("draft_kind", ["handoff", "chase"]);
 
 export const users = pgTable("users", {
@@ -151,6 +153,9 @@ export const tasks = pgTable(
     goalId: uuid("goal_id").references(() => goals.id, { onDelete: "set null" }),
     sourceId: uuid("source_id").references(() => sources.id, { onDelete: "set null" }),
     confidence: real("confidence"),
+    dueDateConfidence: dueDateConfidenceEnum("due_date_confidence"),
+    // True while the task is part of an unaccepted import draft (its status may already be done).
+    inReview: boolean("in_review").notNull().default(false),
     position: integer("position").notNull().default(0),
     ...timestamps,
   },
@@ -158,6 +163,9 @@ export const tasks = pgTable(
     index("tasks_user_status_idx").on(t.userId, t.status),
     index("tasks_root_idx").on(t.rootId),
     index("tasks_parent_idx").on(t.parentId),
+    index("tasks_user_in_review_idx")
+      .on(t.userId)
+      .where(sql`${t.inReview}`),
   ],
 );
 
@@ -250,3 +258,4 @@ export const auditLog = pgTable("audit_log", {
 export type User = typeof users.$inferSelect;
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
+export type NewSource = typeof sources.$inferInsert;
