@@ -10,8 +10,15 @@ describe("isPublicPath", () => {
     "/api/auth/signout",
   ])("lets %s through without a session", (path) => expect(isPublicPath(path)).toBe(true));
 
-  it.each(["/", "/settings", "/settings/delete", "/api/account/delete", "/signin-other", "/api/authx"])(
-    "requires a session for %s",
-    (path) => expect(isPublicPath(path)).toBe(false),
-  );
+  it.each([
+    "/",
+    "/settings",
+    "/settings/delete",
+    "/import",
+    "/import/review",
+    "/api/import",
+    "/api/account/delete",
+    "/signin-other",
+    "/api/authx",
+  ])("requires a session for %s", (path) => expect(isPublicPath(path)).toBe(false));
 });
