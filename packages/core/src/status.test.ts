@@ -14,6 +14,7 @@ const t = (id: string, status: TaskStatus, rootId = "r"): Task => ({
   position: 0,
 });
 const d = (taskId: string, dependsOnId: string): TaskDep => ({ taskId, dependsOnId });
+const under = (id: string, status: TaskStatus, parentId: string): Task => ({ ...t(id, status), parentId });
 const byId = (...tasks: Task[]) => new Map(tasks.map((x) => [x.id, x]));
 
 describe("deriveStatus", () => {
@@ -87,5 +88,61 @@ describe("deriveStatuses", () => {
       c: "todo",
       d: "blocked",
     });
+  });
+
+  it("completes a root through an intermediate parent the user never marked done", () => {
+    const tasks = [t("r", "todo"), t("a", "todo"), under("a1", "done", "a"), under("a2", "done", "a")];
+    expect(Object.fromEntries(deriveStatuses(tasks, []))).toEqual({
+      r: "done",
+      a: "done",
+      a1: "done",
+      a2: "done",
+    });
+    expect(deriveRootStatus(tasks[0]!, tasks)).toBe("done");
+  });
+
+  it("reopens a parent stored as done while a child is open", () => {
+    const tasks = [t("r", "done"), t("a", "done"), under("a1", "todo", "a")];
+    expect(Object.fromEntries(deriveStatuses(tasks, []))).toEqual({
+      r: "in_progress",
+      a: "in_progress",
+      a1: "todo",
+    });
+  });
+
+  it("rolls up a mixed three-level tree and unblocks dependents of derived-done parents", () => {
+    const tasks = [
+      t("r", "todo"),
+      t("a", "todo"), // a1 done, a2 dropped -> done
+      under("a1", "done", "a"),
+      under("a2", "dropped", "a"),
+      t("b", "scheduled"), // b1 has open grandchild -> not done
+      under("b1", "todo", "b"),
+      under("b1x", "done", "b1"),
+      under("b1y", "waiting", "b1"),
+      t("c", "blocked"), // depends on a, which is derived done
+      t("e", "in_progress"), // only dropped children -> keeps stored status
+      under("e1", "dropped", "e"),
+    ];
+    expect(Object.fromEntries(deriveStatuses(tasks, [d("c", "a"), d("b", "a")]))).toEqual({
+      r: "todo",
+      a: "done",
+      a1: "done",
+      a2: "dropped",
+      b: "scheduled",
+      b1: "todo",
+      b1x: "done",
+      b1y: "waiting",
+      c: "todo",
+      e: "in_progress",
+      e1: "dropped",
+    });
+  });
+
+  it("does not mutate its inputs", () => {
+    const tasks = [t("r", "todo"), t("a", "done")];
+    const copy = structuredClone(tasks);
+    deriveStatuses(tasks, []);
+    expect(tasks).toEqual(copy);
   });
 });
