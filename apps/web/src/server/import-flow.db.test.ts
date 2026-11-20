@@ -133,6 +133,11 @@ describe.skipIf(!databaseUrl)("import flow (integration)", () => {
     expect(await handle.db.select().from(contacts).where(eq(contacts.userId, userId))).toHaveLength(1);
   });
 
+  it("keeps one draft when the same doc is imported concurrently", async () => {
+    await Promise.all([importDoc(userId, DOC_A), importDoc(userId, DOC_A), importDoc(userId, DOC_A)]);
+    expect(await countInReview(handle.db, userId)).toBe(3);
+  });
+
   it("keeps accepted tasks when the doc is imported again", async () => {
     await importDoc(userId, DOC_A);
     const form = new FormData();

@@ -19,6 +19,8 @@ export interface SaveDraftInput {
  */
 export async function saveImportDraft(db: Db, input: SaveDraftInput): Promise<void> {
   await db.transaction(async (tx) => {
+    // Serialize imports of the same doc (double-click, browser retry) so only one draft survives.
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${input.userId + ":" + input.docUrl}))`);
     await deletePreviousDraft(tx, input.userId, input.docUrl);
     const contactIds = await resolveContacts(tx, input.userId, input.rows);
 
