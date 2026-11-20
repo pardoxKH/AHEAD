@@ -1,0 +1,622 @@
+{
+  "title": "Tariq — Queue",
+  "documentId": "1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abc",
+  "revisionId": "ALBJ4Lu0",
+  "suggestionsViewMode": "SUGGESTIONS_INLINE",
+  "body": {
+    "content": [
+      {
+        "endIndex": 1,
+        "sectionBreak": {
+          "sectionStyle": {
+            "columnSeparatorStyle": "NONE",
+            "contentDirection": "LEFT_TO_RIGHT",
+            "sectionType": "CONTINUOUS"
+          }
+        }
+      },
+      {
+        "startIndex": 1,
+        "endIndex": 15,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 1,
+              "endIndex": 15,
+              "textRun": {
+                "content": "Tariq — Queue\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "TITLE",
+            "direction": "LEFT_TO_RIGHT",
+            "headingId": "h.title1"
+          }
+        }
+      },
+      {
+        "startIndex": 15,
+        "endIndex": 16,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 15,
+              "endIndex": 16,
+              "textRun": {
+                "content": "\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          }
+        }
+      },
+      {
+        "startIndex": 16,
+        "endIndex": 26,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 16,
+              "endIndex": 26,
+              "textRun": {
+                "content": "This week\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "HEADING_1",
+            "direction": "LEFT_TO_RIGHT",
+            "headingId": "h.heading_116"
+          }
+        }
+      },
+      {
+        "startIndex": 26,
+        "endIndex": 50,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 26,
+              "endIndex": 50,
+              "textRun": {
+                "content": "Send board deck to Omar\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 50,
+        "endIndex": 67,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 50,
+              "endIndex": 67,
+              "textRun": {
+                "content": "Q4 budget review\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 67,
+        "endIndex": 96,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 67,
+              "endIndex": 96,
+              "textRun": {
+                "content": "Collect numbers from finance\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 0.7176471,
+                        "green": 0.88235295,
+                        "blue": 0.8039216
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "nestingLevel": 1,
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 96,
+        "endIndex": 120,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 96,
+              "endIndex": 102,
+              "textRun": {
+                "content": "Draft ",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 102,
+              "endIndex": 120,
+              "textRun": {
+                "content": "summary for Layla\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "nestingLevel": 1,
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 120,
+        "endIndex": 155,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 120,
+              "endIndex": 126,
+              "textRun": {
+                "content": "Check ",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 126,
+              "endIndex": 128,
+              "textRun": {
+                "content": "FX",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 128,
+              "endIndex": 155,
+              "textRun": {
+                "content": " assumptions with the bank\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "nestingLevel": 2,
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 155,
+        "endIndex": 177,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 155,
+              "endIndex": 177,
+              "textRun": {
+                "content": "Book flights to Dubai\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {}
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 177,
+        "endIndex": 181,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 177,
+              "endIndex": 181,
+              "textRun": {
+                "content": "   \n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          }
+        }
+      },
+      {
+        "startIndex": 181,
+        "endIndex": 187,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 181,
+              "endIndex": 187,
+              "textRun": {
+                "content": "Later\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "HEADING_2",
+            "direction": "LEFT_TO_RIGHT",
+            "headingId": "h.heading_2181"
+          }
+        }
+      },
+      {
+        "startIndex": 187,
+        "endIndex": 202,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 187,
+              "endIndex": 202,
+              "textRun": {
+                "content": "Renew passport\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  },
+                  "backgroundColor": {
+                    "color": {
+                      "rgbColor": {
+                        "red": 1,
+                        "green": 1
+                      }
+                    }
+                  },
+                  "bold": true
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          },
+          "bullet": {
+            "listId": "kix.queue1",
+            "textStyle": {
+              "underline": false
+            }
+          }
+        }
+      },
+      {
+        "startIndex": 202,
+        "endIndex": 221,
+        "paragraph": {
+          "elements": [
+            {
+              "startIndex": 202,
+              "endIndex": 209,
+              "textRun": {
+                "content": "Ideas: ",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 209,
+              "endIndex": 221,
+              "textRun": {
+                "content": "hire an EA?\n",
+                "textStyle": {
+                  "weightedFontFamily": {
+                    "fontFamily": "Arial",
+                    "weight": 400
+                  },
+                  "fontSize": {
+                    "magnitude": 11,
+                    "unit": "PT"
+                  }
+                }
+              }
+            }
+          ],
+          "paragraphStyle": {
+            "namedStyleType": "NORMAL_TEXT",
+            "direction": "LEFT_TO_RIGHT"
+          }
+        }
+      }
+    ]
+  },
+  "lists": {
+    "kix.queue1": {
+      "listProperties": {
+        "nestingLevels": [
+          {
+            "bulletAlignment": "START",
+            "glyphSymbol": "●",
+            "glyphFormat": "%0",
+            "indentFirstLine": {
+              "magnitude": 18,
+              "unit": "PT"
+            },
+            "indentStart": {
+              "magnitude": 36,
+              "unit": "PT"
+            },
+            "startNumber": 1
+          },
+          {
+            "bulletAlignment": "START",
+            "glyphSymbol": "○",
+            "glyphFormat": "%1",
+            "indentFirstLine": {
+              "magnitude": 54,
+              "unit": "PT"
+            },
+            "indentStart": {
+              "magnitude": 72,
+              "unit": "PT"
+            },
+            "startNumber": 1
+          },
+          {
+            "bulletAlignment": "START",
+            "glyphSymbol": "■",
+            "glyphFormat": "%2",
+            "indentFirstLine": {
+              "magnitude": 90,
+              "unit": "PT"
+            },
+            "indentStart": {
+              "magnitude": 108,
+              "unit": "PT"
+            },
+            "startNumber": 1
+          }
+        ]
+      }
+    }
+  },
+  "documentStyle": {
+    "pageSize": {
+      "height": {
+        "magnitude": 792,
+        "unit": "PT"
+      },
+      "width": {
+        "magnitude": 612,
+        "unit": "PT"
+      }
+    },
+    "marginTop": {
+      "magnitude": 72,
+      "unit": "PT"
+    }
+  }
+}
