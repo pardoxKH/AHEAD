@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@ahead/core": "workspace:*",
-    "@anthropic-ai/sdk": "^1.11.0",
+    "@anthropic-ai/sdk": "^1.14.0",
     "zod": "^4.6.7"
   }
 }
